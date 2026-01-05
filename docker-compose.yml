@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:15
+    container_name: inventory_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: inventory_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: inventory_app_container
+    ports:
+      - "8000:8000"
+    environment:
+      # Note: we use 'db' as the hostname because Docker links the services
+      - DATABASE_URL=postgresql://postgres:yourpassword@db:5432/inventory_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=inventory_db
+    depends_on:
+      db:
+        condition: service_healthy

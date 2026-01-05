@@ -6,7 +6,7 @@ import enum
 class Base(DeclarativeBase):
     pass
 
-class Status(enum.Enum):
+class OrderStatus(str, enum.Enum):
     PENDING = "Pending"
     SHIPPED = "Shipped"
     CANCELED = "Canceled"
@@ -26,7 +26,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    status = Column(Enum(Status), default=Status.PENDING)
+    status = Column(Enum(OrderStatus), default=OrderStatus.PENDING)
     created_at = Column(DateTime, default=datetime.now(UTC))
 
     # Relationship to the items within this specific order
