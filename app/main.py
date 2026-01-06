@@ -67,8 +67,18 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     return db_product
 
 @app.get("/products", response_model=List[schemas.Product])
-def get_products(db: Session = Depends(get_db)):
-    return db.query(models.Product).all()
+def list_products(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 10
+):
+    """
+    List products with pagination.
+    - skip: Number of records to bypass (default 0)
+    - limit: Maximum number of records to return (default 10)
+    """
+    products = db.query(models.Product).offset(skip).limit(limit).all()
+    return products
 
 
 # --- ORDER RETRIEVAL ---
